@@ -55,5 +55,30 @@ namespace WebAPIAutores.Controllers
             await context.SaveChangesAsync();
             return Ok();
         }
+
+        //Prueba de Model Binding
+        [HttpPost("ModelBindingBasico")]
+        public async Task<ActionResult> LibroConAutorAzar([FromBody] Libro libro, [FromHeader] int RangoMaximo)
+        {
+            //libro.AutorId = ExisteAutor(RangoMaximo);
+            libro.AutorId = RangoMaximo;
+            context.Add(libro);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+        //Recursividad no solucionada. ¿Puede funcionar o no aplica como una funcion recursiva?
+        //private int ExisteAutor(int Rango)
+        //{
+        //    int NumeroAleatorio = new Random().Next(Rango);
+        //    //Valida que el numero arrojado coincida con un autor
+        //    var BuscaAutor = context.Autores.Any(a => a.Id == NumeroAleatorio);
+
+        //    while (!BuscaAutor)
+        //    {
+        //        ExisteAutor(Rango - 1);
+        //    }
+
+        //    return NumeroAleatorio;
+        //}
     }
 }
