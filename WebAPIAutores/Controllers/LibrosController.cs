@@ -21,6 +21,12 @@ namespace WebAPIAutores.Controllers
             return await context.Libros.Include(li => li.Autor).FirstOrDefaultAsync(li => li.Id == id);
         }
 
+        [HttpGet("TodosLosLibros")]
+        public async Task<List<Libro>> GetAll()
+        {
+            return await context.Libros.Include(a => a.Autor).ToListAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult<Libro>> Post(Libro libro)
         {
