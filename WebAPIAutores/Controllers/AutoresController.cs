@@ -15,7 +15,7 @@ namespace WebAPIAutores.Controllers
             this.context = context;
         }
 
-        [HttpGet]
+        [HttpGet("TodosLosAutores")]
         public async Task<ActionResult<List<Autor>>> Get()
         {
             return await context.Autores.Include(x => x.Libros).ToListAsync();
@@ -24,6 +24,12 @@ namespace WebAPIAutores.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(Autor autor)
         {
+            var existeAutor = await context.Autores.AnyAsync(x => x.Nombre == autor.Nombre);
+            if (existeAutor)
+            {
+                return BadRequest($"Ya existe un Autor con el nombre {autor.Nombre}");
+            }
+
             context.Add(autor);
             await context.SaveChangesAsync();
             return Ok();
