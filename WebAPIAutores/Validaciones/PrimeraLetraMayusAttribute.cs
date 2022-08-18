@@ -8,6 +8,9 @@ namespace WebAPIAutores.Validaciones
         {
             if (value == null || string.IsNullOrEmpty(value.ToString()))
             {
+                /*
+                 *  Esta instruccion permite que la validacion no se empalme con [Required] 
+                 */
                 return ValidationResult.Success;
             }
 
