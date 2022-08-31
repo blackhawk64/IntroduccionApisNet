@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.Entidades;
+using WebAPIAutores.Filtros;
 using WebAPIAutores.Servicios;
 
 namespace WebAPIAutores.Controllers
@@ -31,7 +32,8 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpGet("GUID")]
-        [ResponseCache(Duration = 10)]
+        //[ResponseCache(Duration = 10)]
+        [ServiceFilter(typeof(MiFiltroDeAccion))]
         public ActionResult ObtenerGuids()
         {
             return Ok(new
@@ -46,9 +48,9 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpGet("TodosLosAutores")]
-        [Authorize]
         public async Task<ActionResult<List<Autor>>> Get()
         {
+            throw new NotImplementedException();
             logger.LogInformation("Se mostrara listado de todos los autores...");
             logger.LogWarning("test warning...");
             return await context.Autores.Include(x => x.Libros).ToListAsync();
