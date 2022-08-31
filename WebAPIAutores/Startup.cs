@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebAPIAutores.Middlewares;
 using WebAPIAutores.Servicios;
 
 namespace WebAPIAutores
@@ -27,11 +29,14 @@ namespace WebAPIAutores
             services.AddScoped<ServicioScoped>();
             services.AddSingleton<ServicioSingleton>();
 
+            services.AddResponseCaching();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
         
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
@@ -40,9 +45,13 @@ namespace WebAPIAutores
                 app.UseSwaggerUI();
             }
 
+            //app.UseMiddleware<LoguearRespuestaHTTPMiddleware>();
+            app.UseLoguearRespuestaHTTP();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseResponseCaching();
 
             app.UseAuthorization();
 
