@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.Entidades;
 using WebAPIAutores.Filtros;
-using WebAPIAutores.Servicios;
 
 namespace WebAPIAutores.Controllers
 {
@@ -12,49 +11,17 @@ namespace WebAPIAutores.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        private readonly IServicio servicio;
-        private readonly ServicioTransient servicioTransient;
-        private readonly ServicioScoped servicioScoped;
-        private readonly ServicioSingleton servicioSingleton;
-        private readonly ILogger<AutoresController> logger;
 
-        public AutoresController(ApplicationDbContext context, IServicio servicio,
-            ServicioTransient servicioTransient,
-            ServicioScoped servicioScoped,
-            ServicioSingleton servicioSingleton, ILogger<AutoresController> logger)
+        public AutoresController(ApplicationDbContext context)
         {
             this.context = context;
-            this.servicio = servicio;
-            this.servicioTransient = servicioTransient;
-            this.servicioScoped = servicioScoped;
-            this.servicioSingleton = servicioSingleton;
-            this.logger = logger;
         }
 
-        [HttpGet("GUID")]
-        //[ResponseCache(Duration = 10)]
-        [ServiceFilter(typeof(MiFiltroDeAccion))]
-        public ActionResult ObtenerGuids()
-        {
-            return Ok(new
-            {
-                ServicioA_Transient = servicio.ObtenerTransient(),
-                AutoresController_Transient = servicioTransient.Guid,
-                ServicioA_Singleton = servicio.ObtenerSingleton(),
-                AutoresController_Singleton = servicioSingleton.Guid,
-                ServicioA_Scoped = servicio.ObtenerScoped(),
-                AutoresController_Scoped = servicioScoped.Guid
-            });
-        }
-
-        [HttpGet("TodosLosAutores")]
-        public async Task<ActionResult<List<Autor>>> Get()
-        {
-            throw new NotImplementedException();
-            logger.LogInformation("Se mostrara listado de todos los autores...");
-            logger.LogWarning("test warning...");
-            return await context.Autores.Include(x => x.Libros).ToListAsync();
-        }
+        //[HttpGet("TodosLosAutores")]
+        //public async Task<List<Autor>> Get()
+        //{
+        //    return await context.Autores.Include(x => x.Libros).ToListAsync();
+        //}
 
         [HttpPost]
         public async Task<ActionResult> Post(Autor autor)

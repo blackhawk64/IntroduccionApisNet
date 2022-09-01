@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebAPIAutores.Filtros;
 using WebAPIAutores.Middlewares;
-using WebAPIAutores.Servicios;
 
 namespace WebAPIAutores
 {
@@ -27,14 +26,6 @@ namespace WebAPIAutores
                 options.UseSqlServer(Configuration.GetConnectionString("defaultConnection"))
             );
 
-            services.AddTransient<IServicio, ServicioA>();
-
-            services.AddTransient<ServicioTransient>();
-            services.AddScoped<ServicioScoped>();
-            services.AddSingleton<ServicioSingleton>();
-            services.AddTransient<MiFiltroDeAccion>();
-            services.AddHostedService<EscribirEnArchivo>();
-
             services.AddResponseCaching();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
@@ -57,7 +48,6 @@ namespace WebAPIAutores
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseResponseCaching();
 
             app.UseAuthorization();
 
