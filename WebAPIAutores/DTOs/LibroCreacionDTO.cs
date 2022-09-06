@@ -1,15 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebAPIAutores.Validaciones;
 
-namespace WebAPIAutores.Entidades
+namespace WebAPIAutores.DTOs
 {
-    public class Libro
+    public class LibroCreacionDTO
     {
-        public int Id { get; set; }
-        [Required]
         [PrimeraLetraMayus]
         [StringLength(maximumLength: 250)]
         public string Titulo { get; set; }
-        public List<Comentario> Comentarios { get; set; }
+
     }
 }

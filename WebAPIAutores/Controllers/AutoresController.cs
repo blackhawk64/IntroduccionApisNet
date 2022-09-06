@@ -53,6 +53,14 @@ namespace WebAPIAutores.Controllers
             return autor == null ? NotFound() : mapper.Map<AutorDTO>(autor);
         }
 
+        [HttpGet("PorNombreAutor/{nombre}")]
+        public async Task<List<AutorDTO>> Get(string nombre)
+        {
+            var autores = await context.Autores.Where(a => a.Nombre.Contains(nombre)).ToListAsync();;
+
+            return mapper.Map<List<AutorDTO>>(autores);
+        }
+
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(Autor autor, int id) {
             if (autor.Id != id)
