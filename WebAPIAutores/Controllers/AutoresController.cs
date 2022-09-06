@@ -21,11 +21,13 @@ namespace WebAPIAutores.Controllers
             this.mapper = mapper;
         }
 
-        //[HttpGet("TodosLosAutores")]
-        //public async Task<List<Autor>> Get()
-        //{
-        //    return await context.Autores.Include(x => x.Libros).ToListAsync();
-        //}
+        [HttpGet("TodosLosAutores")]
+        public async Task<List<AutorDTO>> Get()
+        {
+            var autores = await context.Autores.ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
+            //return await context.Autores.Include(x => x.Libros).ToListAsync();
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(AutorCreacionDTO autorDto)
@@ -41,6 +43,14 @@ namespace WebAPIAutores.Controllers
             context.Add(autor);
             await context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpGet("AutorPorId/{id:int}")]
+        public async Task<ActionResult<AutorDTO>> Get(int id)
+        {
+            var autor = await context.Autores.FirstOrDefaultAsync(a => a.Id == id);
+
+            return autor == null ? NotFound() : mapper.Map<AutorDTO>(autor);
         }
 
         [HttpPut("{id:int}")]
