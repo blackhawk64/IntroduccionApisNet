@@ -42,10 +42,12 @@ namespace WebAPIAutores.Controllers
 
             context.Add(autor);
             await context.SaveChangesAsync();
-            return Ok();
+
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+            return CreatedAtRoute("AutorPorId", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpGet("AutorPorId/{id:int}")]
+        [HttpGet("AutorPorId/{id:int}", Name = "AutorPorId")]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
