@@ -20,11 +20,17 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<LibroDTO>> Get(int id)
+        public async Task<ActionResult<LibroDTOConAutores>> Get(int id)
         {
-            var libro = await context.Libros.Include(li => li.Comentarios).FirstOrDefaultAsync(li => li.Id == id);
+            //var libro = await context.Libros.Include(li => li.Comentarios).FirstOrDefaultAsync(li => li.Id == id);
+            var libro = await context.Libros
+                .Include(al => al.AutoresLibros)
+                .ThenInclude(a => a.Autor)
+                .FirstOrDefaultAsync(li => li.Id == id);
 
-            return mapper.Map<LibroDTO>(libro);
+            libro.AutoresLibros = libro.AutoresLibros.OrderBy(al => al.Orden).ToList();
+
+            return mapper.Map<LibroDTOConAutores>(libro);
         }
 
         [HttpGet("TodosLosLibros")]
@@ -37,14 +43,30 @@ namespace WebAPIAutores.Controllers
         [HttpPost]
         public async Task<ActionResult<Libro>> Post(LibroCreacionDTO libroCreacionDTO)
         {
-            //var ExisteAutor = await context.Autores.AnyAsync(a => a.Id == libro.AutorId);
+            if (libroCreacionDTO.AutoresIds == null)
+            {
+                return BadRequest("No se puede crear un libro sin autores");
+            }
 
-            //if (!ExisteAutor)
-            //{
-            //    return BadRequest($"El autor ingresado no existe. Id ingresado: {libro.AutorId}");
-            //}
+            var autores = await context.Autores.Where(autor => libroCreacionDTO.AutoresIds.Contains(autor.Id))
+                                .Select(a => a.Id).ToListAsync();
+
+            if (libroCreacionDTO.AutoresIds.Count != autores.Count)
+            {
+                return BadRequest("Uno o mas autores ingresados no existe");
+            }
 
             var libro = mapper.Map<Libro>(libroCreacionDTO);
+
+            if (libro.AutoresLibros != null)
+            {
+                int i = 1;
+                foreach (var autor in libro.AutoresLibros)
+                {
+                    autor.Orden = i;
+                    i++;
+                }
+            }
 
             context.Add(libro);
             await context.SaveChangesAsync();

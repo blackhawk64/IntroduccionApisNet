@@ -46,11 +46,14 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpGet("AutorPorId/{id:int}")]
-        public async Task<ActionResult<AutorDTO>> Get(int id)
+        public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
-            var autor = await context.Autores.FirstOrDefaultAsync(a => a.Id == id);
+            var autor = await context.Autores
+                .Include(al => al.AutoresLibros)
+                .ThenInclude(lb => lb.Libro)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            return autor == null ? NotFound() : mapper.Map<AutorDTO>(autor);
+            return autor == null ? NotFound() : mapper.Map<AutorDTOConLibros>(autor);
         }
 
         [HttpGet("PorNombreAutor/{nombre}")]
