@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.DTOs;
@@ -27,6 +28,11 @@ namespace WebAPIAutores.Controllers
                 .Include(al => al.AutoresLibros)
                 .ThenInclude(a => a.Autor)
                 .FirstOrDefaultAsync(li => li.Id == id);
+
+            if (libro == null)
+            {
+                return NotFound();
+            }
 
             libro.AutoresLibros = libro.AutoresLibros.OrderBy(al => al.Orden).ToList();
 
@@ -58,15 +64,7 @@ namespace WebAPIAutores.Controllers
 
             var libro = mapper.Map<Libro>(libroCreacionDTO);
 
-            if (libro.AutoresLibros != null)
-            {
-                int i = 1;
-                foreach (var autor in libro.AutoresLibros)
-                {
-                    autor.Orden = i;
-                    i++;
-                }
-            }
+            AsignarOrdenAutores(libro);
 
             context.Add(libro);
             await context.SaveChangesAsync();
@@ -74,6 +72,25 @@ namespace WebAPIAutores.Controllers
             var libroDTO = mapper.Map<LibroDTO>(libro);
 
             return CreatedAtRoute("LibroPorId", new {id = libro.Id}, libroDTO);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int id, LibroCreacionDTO libroCreacionDTO)
+        {
+            var libroDb = await context.Libros
+                                .Include(l => l.AutoresLibros)
+                                .FirstOrDefaultAsync(x => x.Id == id);
+            if (libroDb == null)
+            {
+                return NotFound();
+            }
+
+            libroDb = mapper.Map(libroCreacionDTO, libroDb);
+
+            AsignarOrdenAutores(libroDb);
+
+            await context.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]
@@ -88,6 +105,49 @@ namespace WebAPIAutores.Controllers
             context.Remove(new Libro() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
+        }
+        private void AsignarOrdenAutores(Libro libro)
+        {
+            if (libro.AutoresLibros != null)
+            {
+                int i = 1;
+                foreach (var autor in libro.AutoresLibros)
+                {
+                    autor.Orden = i;
+                    i++;
+                }
+            }
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var libroDb = await context.Libros.FirstOrDefaultAsync(l => l.Id == id);
+
+            if (libroDb == null)
+            {
+                return NotFound();
+            }
+
+            var libroDTO = mapper.Map<LibroPatchDTO>(libroDb);
+
+            patchDocument.ApplyTo(libroDTO, ModelState);
+
+            var esValido = TryValidateModel(libroDTO);
+            if (!esValido)
+            {
+                return BadRequest(ModelState);
+            }
+
+            mapper.Map(libroDTO, libroDb);
+
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
