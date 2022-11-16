@@ -11,7 +11,7 @@ namespace WebAPIAutores.Controllers
 {
     [ApiController]
     [Route("api/autores")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -87,6 +87,7 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        //[Authorize(Policy = "EsAdmin")]
         public async Task<ActionResult> Delete(int id) {
             var AutorExiste = await context.Autores.AnyAsync(a => a.Id == id);
             if (!AutorExiste)
