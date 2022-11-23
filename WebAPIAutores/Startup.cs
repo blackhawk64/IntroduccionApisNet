@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WebAPIAutores.Filtros;
 using WebAPIAutores.Middlewares;
+using WebAPIAutores.Servicios;
 
 namespace WebAPIAutores
 {
@@ -89,6 +90,9 @@ namespace WebAPIAutores
                     builder.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader();
                 });
             });
+
+            services.AddDataProtection();
+            services.AddTransient<HashService>();
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
