@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPIAutores.DTOs;
 
-namespace WebAPIAutores.Controllers
+namespace WebAPIAutores.Controllers.V1
 {
-    [Route("api")]
+    [Route("api/v1")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RootController : ControllerBase
@@ -25,7 +25,7 @@ namespace WebAPIAutores.Controllers
             var datosHateoas = new List<DatoHATEOAS>();
             var esAdmin = await authorizationService.AuthorizeAsync(User, "EsAdmin");
 
-            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("ObtenerRoot", new {}), descripcion: "self", metodo: "GET"));
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("ObtenerRoot", new { }), descripcion: "self", metodo: "GET"));
 
             if (esAdmin.Succeeded)
             {

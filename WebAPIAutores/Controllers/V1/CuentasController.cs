@@ -10,11 +10,11 @@ using System.Text;
 using WebAPIAutores.DTOs;
 using WebAPIAutores.Servicios;
 
-namespace WebAPIAutores.Controllers
+namespace WebAPIAutores.Controllers.V1
 {
     [ApiController]
-    [Route("api/cuentas")]
-    public class CuentasController: ControllerBase
+    [Route("api/v1/cuentas")]
+    public class CuentasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
@@ -23,10 +23,10 @@ namespace WebAPIAutores.Controllers
         private readonly IDataProtector dataProtector;
 
         public CuentasController(UserManager<IdentityUser> userManager
-            ,IConfiguration configuration
-            ,SignInManager<IdentityUser> signInManager
-            ,IDataProtectionProvider dataProtectionProvider
-            ,HashService hashService)
+            , IConfiguration configuration
+            , SignInManager<IdentityUser> signInManager
+            , IDataProtectionProvider dataProtectionProvider
+            , HashService hashService)
         {
             this.userManager = userManager;
             this.configuration = configuration;
@@ -43,10 +43,11 @@ namespace WebAPIAutores.Controllers
 
             var textoDescifrado = dataProtector.Unprotect(textoCifrado);
 
-            return Ok(new {
-                textoPlano = textoPlano,
-                textoCifrado = textoCifrado,
-                textoDescifrado = textoDescifrado
+            return Ok(new
+            {
+                textoPlano,
+                textoCifrado,
+                textoDescifrado
             });
         }
 
@@ -62,9 +63,9 @@ namespace WebAPIAutores.Controllers
 
             return Ok(new
             {
-                textoPlano = textoPlano,
-                textoCifrado = textoCifrado,
-                textoDescifrado = textoDescifrado
+                textoPlano,
+                textoCifrado,
+                textoDescifrado
             });
         }
 
@@ -76,7 +77,7 @@ namespace WebAPIAutores.Controllers
 
             return Ok(new
             {
-                textoPlano = textoPlano,
+                textoPlano,
                 Hash1 = resultadoUno,
                 Hash2 = resultadoDos
             });
@@ -86,7 +87,8 @@ namespace WebAPIAutores.Controllers
         [HttpPost("registrar", Name = "RegistrarUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
         {
-            var usuario = new IdentityUser { 
+            var usuario = new IdentityUser
+            {
                 UserName = credencialesUsuario.Email,
                 Email = credencialesUsuario.Email
             };
@@ -107,7 +109,7 @@ namespace WebAPIAutores.Controllers
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password
-                    ,isPersistent: false, lockoutOnFailure: false);
+                    , isPersistent: false, lockoutOnFailure: false);
             if (resultado.Succeeded)
             {
                 return await ConstruirToken(credencialesUsuario);
@@ -123,7 +125,8 @@ namespace WebAPIAutores.Controllers
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
             var emailClaim = HttpContext.User.Claims.Where(c => c.Type == "email").FirstOrDefault().Value;
-            var credencialesUsuario = new CredencialesUsuario{
+            var credencialesUsuario = new CredencialesUsuario
+            {
                 Email = emailClaim
             };
 
@@ -166,7 +169,7 @@ namespace WebAPIAutores.Controllers
             var expiracion = DateTime.UtcNow.AddMonths(1);
 
             var securityToken = new JwtSecurityToken(issuer: null, audience: null, claims: claims
-                ,expires: expiracion, signingCredentials: creds);
+                , expires: expiracion, signingCredentials: creds);
 
             return new RespuestaAutenticacion()
             {

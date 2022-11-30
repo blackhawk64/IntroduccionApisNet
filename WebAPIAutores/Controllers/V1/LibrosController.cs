@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.DTOs;
 using WebAPIAutores.Entidades;
 
-namespace WebAPIAutores.Controllers
+namespace WebAPIAutores.Controllers.V1
 {
     [ApiController]
-    [Route("api/libros")]
+    [Route("api/v1/libros")]
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -71,7 +71,7 @@ namespace WebAPIAutores.Controllers
 
             var libroDTO = mapper.Map<LibroDTO>(libro);
 
-            return CreatedAtRoute("LibroPorId", new {id = libro.Id}, libroDTO);
+            return CreatedAtRoute("LibroPorId", new { id = libro.Id }, libroDTO);
         }
 
         [HttpPut("{id:int}", Name = "ActualizarLibro")]

@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.DTOs;
 using WebAPIAutores.Entidades;
 
-namespace WebAPIAutores.Controllers
+namespace WebAPIAutores.Controllers.V1
 {
     [ApiController]
-    [Route("api/libros/{libroId:int}/comentarios")]
-    public class ComentariosController:ControllerBase
+    [Route("api/v1/libros/{libroId:int}/comentarios")]
+    public class ComentariosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
         private readonly UserManager<IdentityUser> userManager;
 
         public ComentariosController(ApplicationDbContext context, IMapper mapper
-            ,UserManager<IdentityUser> userManager)
+            , UserManager<IdentityUser> userManager)
         {
             this.context = context;
             this.mapper = mapper;
@@ -48,7 +48,7 @@ namespace WebAPIAutores.Controllers
 
             var comentarioDTO = mapper.Map<ComentarioDTO>(comentario);
 
-            return CreatedAtRoute("ComentarioPorId", new {id = comentario.Id, libroId = libroId}, comentarioDTO);
+            return CreatedAtRoute("ComentarioPorId", new { id = comentario.Id, libroId }, comentarioDTO);
         }
 
         [HttpPut("{id:int}", Name = "ActualizarComentario")]
