@@ -11,9 +11,10 @@ using WebAPIAutores.Utilidades;
 namespace WebAPIAutores.Controllers.V1
 {
     [ApiController]
-    [Route("api/autores")]
-    [CabeceraPresente("x-version", "1")]
+    [Route("api/v1/autores")]
+    //[CabeceraPresente("x-version", "1")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -94,6 +95,11 @@ namespace WebAPIAutores.Controllers.V1
             return NoContent();
         }
 
+        /// <summary>
+        /// Endpoint que permite la eliminacion de un autor
+        /// </summary>
+        /// <param name="id">Este Id corresponde al asignado al autor</param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "EliminarAutorV1")]
         //[Authorize(Policy = "EsAdmin")]
         public async Task<ActionResult> Delete(int id)
