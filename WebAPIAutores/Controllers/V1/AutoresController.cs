@@ -11,7 +11,8 @@ using WebAPIAutores.Utilidades;
 namespace WebAPIAutores.Controllers.V1
 {
     [ApiController]
-    [Route("api/v1/autores")]
+    [Route("api/autores")]
+    [CabeceraPresente("x-version", "1")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     public class AutoresController : ControllerBase
     {
