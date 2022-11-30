@@ -25,7 +25,7 @@ namespace WebAPIAutores.Controllers
             this.userManager = userManager;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "PublicarComentario")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioCreacionDTO comentarioCreacionDTO)
         {
@@ -51,7 +51,7 @@ namespace WebAPIAutores.Controllers
             return CreatedAtRoute("ComentarioPorId", new {id = comentario.Id, libroId = libroId}, comentarioDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "ActualizarComentario")]
         public async Task<ActionResult> Put(ComentarioCreacionDTO comentarioCreacionDTO, int libroId, int id)
         {
             var existeLibro = await context.Libros.AnyAsync(lb => lb.Id == libroId);
@@ -77,7 +77,7 @@ namespace WebAPIAutores.Controllers
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerComentarios")]
         public async Task<ActionResult<List<ComentarioDTO>>> Get(int libroId)
         {
             var existeLibro = await context.Libros.AnyAsync(lb => lb.Id == libroId);

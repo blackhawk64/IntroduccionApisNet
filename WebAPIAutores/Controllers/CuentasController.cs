@@ -35,7 +35,7 @@ namespace WebAPIAutores.Controllers
             dataProtector = dataProtectionProvider.CreateProtector("Poj9Sp$dR");
         }
 
-        [HttpGet("encriptar")]
+        [HttpGet("encriptar", Name = "EncriptarAlgo")]
         public ActionResult Encriptar()
         {
             var textoPlano = "AlexisAlcan";
@@ -50,7 +50,7 @@ namespace WebAPIAutores.Controllers
             });
         }
 
-        [HttpGet("encriptarPorTiempo")]
+        [HttpGet("encriptarPorTiempo", Name = "EncriptarPorTiempo")]
         public ActionResult EncriptarPorTiempo()
         {
             var protectorLimitado = dataProtector.ToTimeLimitedDataProtector();
@@ -68,7 +68,7 @@ namespace WebAPIAutores.Controllers
             });
         }
 
-        [HttpGet("hash/{textoPlano}")]
+        [HttpGet("hash/{textoPlano}", Name = "HashTextoPlano")]
         public ActionResult RealizarHash(string textoPlano)
         {
             var resultadoUno = hashService.Hash(textoPlano);
@@ -83,7 +83,7 @@ namespace WebAPIAutores.Controllers
         }
 
 
-        [HttpPost("registrar")]
+        [HttpPost("registrar", Name = "RegistrarUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
         {
             var usuario = new IdentityUser { 
@@ -103,7 +103,7 @@ namespace WebAPIAutores.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [HttpPost("login", Name = "LoginUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password
@@ -118,7 +118,7 @@ namespace WebAPIAutores.Controllers
             }
         }
 
-        [HttpGet("RenovarToken")]
+        [HttpGet("RenovarToken", Name = "RenovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
@@ -130,7 +130,7 @@ namespace WebAPIAutores.Controllers
             return await ConstruirToken(credencialesUsuario);
         }
 
-        [HttpPost("HacerAdmin")]
+        [HttpPost("HacerAdmin", Name = "HacerAdmin")]
         public async Task<ActionResult> HacerAdmin(EditarAdminDTO editarAdminDTO)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdminDTO.Email);
@@ -139,7 +139,7 @@ namespace WebAPIAutores.Controllers
             return NoContent();
         }
 
-        [HttpPost("RemoverAdmin")]
+        [HttpPost("RemoverAdmin", Name = "RemoverAdmin")]
         public async Task<ActionResult> RemoverAdmin(EditarAdminDTO editarAdminDTO)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdminDTO.Email);

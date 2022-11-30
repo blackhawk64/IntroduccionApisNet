@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using WebAPIAutores.DTOs;
 using WebAPIAutores.Entidades;
 using WebAPIAutores.Filtros;
+using WebAPIAutores.Utilidades;
 
 namespace WebAPIAutores.Controllers
 {
@@ -23,16 +24,17 @@ namespace WebAPIAutores.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("TodosLosAutores")]
+        [HttpGet("TodosLosAutores", Name = "TodosLosAutores")]
         [AllowAnonymous]
-        public async Task<List<AutorDTO>> Get()
+        [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
+        public async Task<ActionResult<List<AutorDTO>>> Get()
         {
             var autores = await context.Autores.ToListAsync();
             return mapper.Map<List<AutorDTO>>(autores);
             //return await context.Autores.Include(x => x.Libros).ToListAsync();
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CrearAutor")]
         public async Task<ActionResult> Post(AutorCreacionDTO autorDto)
         {
             var existeAutor = await context.Autores.AnyAsync(x => x.Nombre == autorDto.Nombre);
@@ -51,25 +53,29 @@ namespace WebAPIAutores.Controllers
         }
 
         [HttpGet("AutorPorId/{id:int}", Name = "AutorPorId")]
-        public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
+        [AllowAnonymous]
+        [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
+        public async Task<ActionResult<AutorDTOConLibros>> GetPorId(int id)
         {
             var autor = await context.Autores
                 .Include(al => al.AutoresLibros)
                 .ThenInclude(lb => lb.Libro)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-            return autor == null ? NotFound() : mapper.Map<AutorDTOConLibros>(autor);
+            var DTO = mapper.Map<AutorDTOConLibros>(autor);
+
+            return autor == null ? NotFound() : DTO;
         }
 
-        [HttpGet("PorNombreAutor/{nombre}")]
-        public async Task<List<AutorDTO>> Get(string nombre)
+        [HttpGet("PorNombreAutor/{nombre}", Name = "PorNombreAutor")]
+        public async Task<List<AutorDTO>> GetPorNombre(string nombre)
         {
             var autores = await context.Autores.Where(a => a.Nombre.Contains(nombre)).ToListAsync();;
 
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "ActualizarAutor")]
         public async Task<ActionResult> Put(AutorCreacionDTO autorCreacionDTO, int id) {
 
             var AutorExiste = await context.Autores.AnyAsync(a => a.Id == id);
@@ -86,7 +92,7 @@ namespace WebAPIAutores.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "EliminarAutor")]
         //[Authorize(Policy = "EsAdmin")]
         public async Task<ActionResult> Delete(int id) {
             var AutorExiste = await context.Autores.AnyAsync(a => a.Id == id);
